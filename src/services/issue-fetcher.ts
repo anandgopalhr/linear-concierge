@@ -50,7 +50,7 @@ export class IssueFetcher {
 
   private async normalizeComments(comments: any[]): Promise<IssueComment[]> {
     // Process all comments in parallel
-    return Promise.all(
+    const normalized = await Promise.all(
       comments.map(async (comment) => {
         const user = await comment.user;
         return {
@@ -63,5 +63,9 @@ export class IssueFetcher {
         };
       })
     );
+
+    // Sort comments by creation date (oldest first)
+    // This ensures the last comment in the array is the most recent
+    return normalized.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
   }
 }
